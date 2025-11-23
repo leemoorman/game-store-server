@@ -26,7 +26,7 @@ const upload = multer ({storage: storage});
             "stock": 3, 
             "description": "Experience lightning-fast loading with an ultra-high speed SSD, deeper immersion with support for haptic feedback1, adaptive triggers1 and 3D Audio1, and an incredible collection of PlayStation games.",
             "rating": "4.3",
-            "img": "console-images/playstation5.jpg"
+            "img": "playstation5.jpg"
         },
         {
             "_id": 2,
@@ -35,7 +35,7 @@ const upload = multer ({storage: storage});
             "stock": 0, 
             "description": "an eighth-generation home video game console by Sony, launched in 2013, that features an AMD-based x86 processor, an integrated GPU, 8 GB of GDDR5 RAM, a Blu-ray disc drive, and a user-friendly interface",
             "rating": "4.6",
-            "img": "console-images/playstation-4.png"
+            "img": "playstation-4.png"
         },
         {
             "_id": 3,
@@ -44,7 +44,7 @@ const upload = multer ({storage: storage});
             "stock": 0, 
             "description": "a handheld game console developed and marketed by Sony Computer Entertainment",
             "rating": "4.1",
-            "img": "console-images/playstation-vita.png"
+            "img": "playstation-vita.png"
         },
         {
             "_id": 4,
@@ -53,7 +53,7 @@ const upload = multer ({storage: storage});
             "stock": 1, 
             "description": "Microsoft's high-performance, flagship gaming console, designed for next-generation gaming with features like 4K visuals at up to 120 FPS, ray tracing, and extremely fast load times via an SSD",
             "rating": "4.1",
-            "img": "console-images/xbox-series-x.png"
+            "img": "xbox-series-x.png"
         },
         {
             "_id": 5,
@@ -62,7 +62,7 @@ const upload = multer ({storage: storage});
             "stock": 7, 
             "description": "An eighth-generation home video game console developed by Microsoft",
             "rating": "3.8",
-            "img": "console-images/xbox-one.png"
+            "img": "xbox-one.png"
         },
         {
             "_id": 6,
@@ -71,7 +71,7 @@ const upload = multer ({storage: storage});
             "stock": 0, 
             "description": "Microsoft's home video game console, released in 2005 as the successor to the original Xbox",
             "rating": "4.9",
-            "img": "console-images/xbox-360.png"
+            "img": "xbox-360.png"
         },
         {
             "_id": 7,
@@ -80,7 +80,7 @@ const upload = multer ({storage: storage});
             "stock": 0, 
             "description": "the successor to the original Switch, featuring a larger 1080p screen, the ability to output up to 4K resolution to a TV, and support for HDR and higher frame rates for smoother gameplay",
             "rating": "3.2",
-            "img": "console-images/nintendo-switch-2.png"
+            "img": "nintendo-switch-2.png"
         },
         {
             "_id": 8,
@@ -89,7 +89,7 @@ const upload = multer ({storage: storage});
             "stock": 9, 
             "description": "a hybrid video game console developed by Nintendo that can be used as both a home console for playing on a TV and a portable handheld device for gaming on the go",
             "rating": "4.7",
-            "img": "console-images/nintendo-switch.png"
+            "img": "nintendo-switch.png"
         }
     ];
 
@@ -122,10 +122,50 @@ app.post("/api/consoles", upload.single("img"), (req, res) =>{
     }
 
     if(req.file){
-        game_console.img = "/console-images/" + req.file.filename;
+        game_console.img = req.file.filename;
     }
 
     consoles.push(game_console);
+    res.status(200).send(game_console);
+});
+
+app.put("/api/consoles/:id", upload.single("img"), (req, res) =>{
+    let game_console = consoles.find((c) => c._id === parseInt(req.params.id));
+
+    if (!game_console) res.status(404).send("No Console with that ID");
+
+    const result = validateConsole(req.body);
+
+    if(result.error){
+        console.log('Invalid Info');
+        res.status(400).send(result.error.details[0].message);
+        return;
+    }
+
+    game_console.name = req.body.name;
+    game_console.price = req.body.price;
+    game_console.stock = req.body.stock;
+    game_console.description = req.body.description;
+    game_console.rating = req.body.rating;
+
+    if(req.file){
+        game_console.img = req.file.filename;
+    }
+
+    res.status(200).send(game_console);
+});
+
+app.delete("/api/consoles/:id", (req, res) =>{
+    const game_console = consoles.find((c) => c._id === parseInt(req.params.id));
+
+    console.log(game_console);
+    
+    if(!game_console){
+        res.status(404).send('The console with the given id was not found');
+    }
+    
+    const index = consoles.indexOf(game_console);
+    consoles.splice(index, 1);
     res.status(200).send(game_console);
 });
 
