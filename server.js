@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 
 //testdb is name of database, it will automatically make it
 mongoose
-  .connect("mongodb+srv://leemoorman3_db_user:leemoorman3_db_user@cluster0.cfmxjey.mongodb.net/?appName=Cluster0")
+  .connect("mongodb+srv://leemoorman3_db_user:thisisapassword@cluster0.cfmxjey.mongodb.net/?appName=Cluster0")
   .then(() => console.log("Connected to mongodb..."))
   .catch((err) => console.error("could not connect ot mongodb...", err));
 
