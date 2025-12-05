@@ -17,9 +17,10 @@ const storage = multer.diskStorage({
     }
 });
 
-//testdb is name of database, it will automatically make it
+const upload = multer ({storage: storage});
+
 mongoose
-  .connect("mongodb+srv://leemoorman3_db_user:thisisapassword@cluster0.cfmxjey.mongodb.net/?appName=Cluster0")
+  .connect("mongodb+srv://leemoorman3_db_user:thisisapassword@cluster0.cfmxjey.mongodb.net/gamestore?appName=Cluster0")
   .then(() => console.log("Connected to mongodb..."))
   .catch((err) => console.error("could not connect ot mongodb...", err));
 
@@ -34,17 +35,10 @@ const consoleSchema = new mongoose.Schema({
 
 const gameConsole = mongoose.model("Console", consoleSchema);
 
-
-const upload = multer ({storage: storage});
-
 app.get("/api/consoles", async(req, res) =>{
     const consoles = await gameConsole.find();
+    console.log(consoles);
     res.send(consoles);
-});
-
-app.get("/api/consoles/:id", async(req, res) =>{
-    const game_console = await gameConsole.findOne({_id: id});
-    res.send(game_console);
 });
 
 app.post("/api/consoles", upload.single("img"), async(req, res) =>{
@@ -69,7 +63,7 @@ app.post("/api/consoles", upload.single("img"), async(req, res) =>{
         game_console.img = req.file.filename;
     }
 
-    const newConsole = await gameConsole.save();
+    const newConsole = await game_console.save();
     res.status(200).send(newConsole);
 });
 
